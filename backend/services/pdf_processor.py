@@ -273,7 +273,7 @@ class PDFProcessor:
             if progress_callback:
                 progress_callback("pdf", "Translating content", 20, 100)
             
-            def translation_progress(current, total):
+            def translation_progress(file_type, current_item, current, total):
                 progress = 20 + int((current / total) * 70)  # 20-90% for translation
                 if progress_callback:
                     progress_callback("pdf", f"Translating {current}/{total}", progress, 100)

@@ -15,7 +15,7 @@ from models.schemas import (
     CurrentProgress, JobStats, LastError, TranslationJob
 )
 from services.epub_processor_v2 import EPUBProcessor
-from services.pdf_processor import PDFProcessor
+from services.pdf_processor_v2 import PDFProcessor
 from services.utils import (
     create_temp_dir, cleanup_old_files, get_file_size, 
     is_allowed_file_type, generate_job_id
@@ -169,10 +169,12 @@ async def process_epub_job(job_id: str, input_path: str, target_lang: str):
 async def process_pdf_job(job_id: str, input_path: str, target_lang: str):
     """Background task for PDF processing."""
     try:
+        add_job_log(job_id, "Starting PDF processing...")
         output_path = input_path.replace('.pdf', '_translated.pdf')
         
         def callback(file_type, current_item, current, total):
             progress_callback(job_id, file_type, current_item, current, total)
+            add_job_log(job_id, f"Processing {current_item}")
         
         result = await pdf_processor.process_pdf(
             input_path, output_path, target_lang, callback
@@ -366,4 +368,4 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)
